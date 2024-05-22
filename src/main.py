@@ -112,7 +112,7 @@ def parse_args():
 
 def open_files(args):
     if args.input == "-":
-        print("no input file provided, using default!", style="white on red")
+        print("no input file provided, using default!", style="bold white on red")
 
         # input_file needs to be a TextIOWrapper, so we do this yuckyness
         binary_stream = io.BytesIO()
@@ -124,7 +124,7 @@ def open_files(args):
         try:
             input_file = open(args.input, "r")
         except OSError as e:
-            print(f"could not open input file: {e}", style="white on red")
+            print(f"could not open input file: {e}", style="bold white on red")
             exit(1)
 
     if args.output == "-":
@@ -133,7 +133,7 @@ def open_files(args):
         try:
             output_file = open(args.output, "w+")
         except OSError as e:
-            print(f"could not open output file: {e}", style="white on red")
+            print(f"could not open output file: {e}", style="bold white on red")
             exit(2)
 
     return (input_file, output_file)
@@ -145,7 +145,7 @@ def get_github():
     if github_token is None:
         print(
             "using no api token is not recomended, you will get ratelimited!",
-            style="white on red",
+            style="bold white on red",
         )
         github = Github()
     else:
@@ -173,13 +173,13 @@ def filetype_check(output_filename, stats_count):
         # csv is annoying to work lol
         print(
             "only the last 'stats' will make it to the output!",
-            style="white on red",
+            style="bold white on red",
         )
 
     if not extension in ["toml", "json", "csv"]:
         print(
             "unsupported filetype, you will get a python object output!",
-            style="white on red",
+            style="bold white on red",
         )
 
 
@@ -228,7 +228,7 @@ def main():
     try:
         input_data = toml.loads(input_file.read())
     except toml.TomlDecodeError as e:
-        print(f"could not decode toml: {e}", style="white on red")
+        print(f"could not decode toml: {e}", style="bold white on red")
         exit(3)
 
     filetype_check(args.output, len(trygetitem([input_data], "stats", [])))
@@ -256,16 +256,16 @@ def main():
         start = trygetitem(trytables, "start_date", datetime.fromtimestamp(0))
         end = trygetitem(trytables, "end_date", datetime.now())
 
-        print(f"[blue]processing:[/blue] {label}")
+        print(f"[bold blue]processing:[/bold blue] {label}")
 
         authors = {}
 
         for repo_str in repos:
-            print(f"[blue]processing repo:[/blue] {repo_str}")
+            print(f"[bold blue]processing repo:[/bold blue] {repo_str}")
             try:
                 repo = github.get_repo(repo_str)
             except GithubException as _:
-                print(f"unable to get {repo_str}", style="white on red")
+                print(f"unable to get {repo_str}", style="bold white on red")
                 exit(4)
 
             for commit in repo.get_commits(since=start, until=end):
