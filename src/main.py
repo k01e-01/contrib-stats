@@ -7,12 +7,14 @@ import io
 import toml
 import json
 import csv
+import signal
 from typing import Any
 from dotenv import load_dotenv
 from github import Github, Auth, GithubException
 from datetime import datetime
 from rich.pretty import pprint  # pyright: ignore
 from rich.console import Console
+from rich.control import Control
 
 
 # https://github.com/k01e-01/contrib-stats
@@ -45,7 +47,8 @@ end_date = 2024-02-01T00:00:00Z
 """
 
 silent: bool = False
-_tempprint = Console().print  # hhhh forgive me
+console = Console()
+_tempprint = console.print  # hhhh forgive me
 _temppprint = pprint
 
 
@@ -206,7 +209,15 @@ def write_output(
         output_file.write(output.__repr__())
 
 
+def handle_signal(*_):
+    console.control(Control.move_to_column(0))
+    print("caught ^C, exiting gracefully!", style="bold white on red")
+    exit(0)
+
+
 def main():
+    signal.signal(signal.SIGINT, handle_signal)
+
     args = parse_args()
 
     global silent
